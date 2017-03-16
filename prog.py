@@ -3,7 +3,7 @@
 # I2C PROGRAMMER FOR RTD2660 FROM RASPBERRY PI
 
 # Optimized for PCB800099 and PCB800661 cards. This software programs the flash memory connected to RTD2660.
-# Github: https://github.com/raparram
+# Github: https://github.com/raparram/Programador-I2C-RTD2660-Rpi3
 
 # Code base: https://github.com/mushketer888/pyrtd2660i2c
 # Please! Visit this.
