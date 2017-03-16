@@ -17,6 +17,7 @@ Para elegir el firmware tambien hay que tener encuenta la pantalla, espeificamen
 ### Ejemplo:
 * Pantalla: LTN133AT16 - Datasheet: http://panelone.net/es/13-3-pulgadas/SAMSUNG_LTN133AT16-S01_13.3_pulgadas-datasheet
 * Driver: PCB800661
+
 Identificamos:
 * Resolución: 1280x800
 * Vizualización de color: 262k (6-bits)
@@ -25,11 +26,12 @@ Identificamos:
 Buscando en la capeta PCB800661 encontramos el firmware 'PCB800661-LVDS1280X800-D6BIT-!HDMI.BIN', en su nombre encontramos la tarjeta PCB800661, la clase de señal LVDS, con resolución 1280X800, y la vizualización de color D6BIT.
 
 ## Conexión 
+Para realizar la programación del firmware debe realizar la siguiente conexión según la tarjeta:
 
 ![Conexión PCB800661](http://img.auctiva.com/imgdata/1/6/7/2/2/0/6/webimg/831951423_o.jpg)
 
 ![Conexión PCB800099](http://www.njytouch.com/upload/201410/thumb_dis/1414462539.jpg)
 
 ## Ejecución
-
-Al clonar o descargar la carpeta 
+Antes de la ejecución hay que asegurar la correcta conexión y 
+Dentro de la carpeta del repositorio, especificamente donde se encuentra el archivo 'prog.py', ejecutar el
