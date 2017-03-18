@@ -103,6 +103,7 @@ def SPICommonCommand( cmd_type, cmd_code, read_length, write_length, write_value
         return (bus.read_i2c_block_data(0x4a,0x67,1)[0] << 8) | bus.read_i2c_block_data(0x4a,0x68,1)[0]
     elif read_length == 3:
         return (bus.read_i2c_block_data(0x4a,0x67,1)[0] << 16) | (bus.read_i2c_block_data(0x4a,0x68,1)[0] << 8) | bus.read_i2c_block_data(0x4a,0x69,1)[0]
+
 def SPIRead( address, data, len):
     bus.write_i2c_block_data(0x4a,0x60, [0x46])
     bus.write_i2c_block_data(0x4a,0x61, [0x3])
@@ -122,21 +123,11 @@ def SPIRead( address, data, len):
         if (read_len > 64):
             read_len = 64
 
-        # Original
-        # ReadBytesFromAddr(0x70, data, read_len)
-
-        # Adafruit library
-        # keeps failing with an ACK error
-        # bytedata = i2c.readList(0x70, read_len) # returns bytearray
-        
-        # fell back to reading ONE BYTE AT A TIME! (this took around 8-10 mins)
         bytedata = bytearray()
         itr = read_len
         while(itr > 0):
             bytedata += bytearray([bus.read_i2c_block_data(0x4a,0x70,1)[0]])
             itr -= 1
-        
-        # data += read_len
 
         data += bytedata
         len -= read_len
@@ -168,7 +159,6 @@ def SPIComputeCRC(start, end):
     while (not (b & 0x2)):
         b = bus.read_i2c_block_data(0x4a,0x6f,1)[0]
     # TODO: add timeout and reset the controller
-
     return bus.read_i2c_block_data(0x4a,0x75,1)[0]
 
 def ShouldProgramPage(buffer, size):
@@ -182,13 +172,11 @@ def ShouldProgramPage(buffer, size):
 
 def ProgramFlash(fname,chip_size):
     masiv=open(fname,"rb")
-
     print "Erasing..."
     SPICommonCommand(E_CC_WRITE_AFTER_EWSR, 1, 0, 1, 0); #// Unprotect the Status Register
     SPICommonCommand(E_CC_WRITE_AFTER_WREN, 1, 0, 1, 0); #// Unprotect the flash
     SPICommonCommand(E_CC_ERASE, 0xc7, 0, 0, 0); #// Chip Erase
     print "Done"
-
     b=0
     addr = 0
     buffer = bytearray()
