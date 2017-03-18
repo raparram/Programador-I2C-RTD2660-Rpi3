@@ -1,21 +1,19 @@
 # PROGRAMADOR I2C PARA RTD2660 DESDE RASPBERRY PI
 Este repositorio tiene como fin documentar y brindar las herramientas necesarias para programar cualquier tarjeta que use RTD2660 y una memoria flash para guardar el firmware. Se da prioridad a los drives PCB800099 y PCB800661. Para desarrollar esta guía con éxito se requiere haber realizado estos pasos previos:
 
-* Tener pleno acceso a una Raspberry PI. Si no cuenta con una pantalla, mouse y teclado USB, recomiendo el siguiente tutorial: http://stackoverflow.com/questions/16040128/hook-up-raspberry-pi-via-ethernet-to-laptop-without-router
+* Activación del I2C de la Raspberry Pi. Para mayor información visitar: http://www.raspberrypi-spy.co.uk/2014/11/enabling-the-i2c-interface-on-the-raspberry-pi/
 
-* Haber activado el I2C de la Raspberry. Para mayor información visitar: http://www.raspberrypi-spy.co.uk/2014/11/enabling-the-i2c-interface-on-the-raspberry-pi/
-
-* Contar en la Raspberry con *python-smbus* y *i2c-tools*. Los puede instalar desde consola con la siguiente línea:
+* Instalación de *python-smbus* y *i2c-tools* en la Raspberry Pi. Los puede instalar desde consola con la siguiente línea:
                   
         sudo apt-get install -y python-smbus i2c-tools
 
 ## Como seleccionar el firmware
-Si su tarjeta es PCB800099 o PCB800661 puede que el firmware que busca esta en alguna de las carpetas adjuntas, en el caso contrario, la sugerencia es solicitarlo a su proveedor. Desafortunadamente no he encontrado el código fuente para generar el firmware.bin, si usted logra obtenerlo y hacerlo funcionar, por favor hágaselo saber al mundo.
+Si su tarjeta es PCB800099 o PCB800661 puede que el firmware que busca esta en alguna de las carpetas adjuntas, en el caso contrario, la sugerencia es solicitarlo a su proveedor. Desafortunadamente no he encontrado el código fuente para generar el *firmware.bin*, si usted logra obtenerlo y hacerlo funcionar, por favor hágaselo saber al mundo.
 
 Para elegir el firmware también hay que tener en cuenta la pantalla, específicamente 3 características: resolución, visualización de color y clase de señal de salida, la forma más efectiva para obtener esta información es por medio del datasheet de la misma.
 
 ### Ejemplo:
-* Pantalla LTN133AT16-302: http://panelone.net/es/13-3-pulgadas/SAMSUNG_LTN133AT16-S01_13.3_pulgadas-datasheet
+* Pantalla LTN133AT16: http://panelone.net/es/13-3-pulgadas/SAMSUNG_LTN133AT16-S01_13.3_pulgadas-datasheet
 * Driver: PCB800661
 
 Identificamos:
@@ -29,10 +27,10 @@ Buscando en la capeta PCB800661 encontramos el firmware *PCB800661-LVDS1280X800-
 Para realizar la programación del firmware debe realizar la siguiente conexión según la tarjeta:
 
 * PCB800661:
-![Conexión PCB800661](http://subefotos.com/ver/?d37b84e64cd67339c8d47c0f1d33d8cao.jpg)
+![Conexión PCB800661](http://thumbs.subefotos.com/d37b84e64cd67339c8d47c0f1d33d8cao.jpg)
 
 * PCB800099:
-![Conexión PCB800099](http://subefotos.com/ver/?5064c26c82d775459a9efa73a730a35do.png)
+![Conexión PCB800099](http://thumbs.subefotos.com/5064c26c82d775459a9efa73a730a35do.jpg)
 
 Si su tarjeta no corresponde a las anteriores, busque un puerto de programación, por lo general es un conector Grove de 4 pines, como el observado en la tarjeta PCB800661, de los cuales dos pines son GND y los otros dos corresponden al I2C, SDA y SCL.
 
@@ -51,12 +49,12 @@ Para ejecutar el programador debe abrir una terminal o consola desde la carpeta 
 
 El proceso de carga del firmware puede demorar varios minutos, es normal, para tener una clara visión de una programación exitosa se invita a ver el archivo *test_consola*. 
 
-###Ejemplo:
+### Ejemplo:
 Para obtener el repositorio y programar puede usar los siguientes comandos:
 
         git clone https://github.com/raparram/Programador-I2C-RTD2660-Rpi3.git
         cd 
         python prog.py /home/pi/
        
-##La programación no exitosa es una oportunidad de colaborar
-Si la consola le informa *>>> Review wiki to add new flash chip !* o cualquier otro mensaje diferente a *Done* es una excelente oportunidad para colaborar en el proyecto. Lo primero que debe hacer es conseguir el firmware, si tiene algún firmware diferente a los aquí publicados por favor súbalo, la mejor manera de hacerlo es en una carpeta nombrada como la referencia de la tarjeta. Para continuar con el proceso debe identificar la memoria flash que implementa su driver, una buena pista es el Jedec ID informado por el programa, ya con la referencia clara, se debe proceder a actualizar el arreglo de objetos *FlashDevices*, ubicado entre las líneas 32 y 68 del archivo *prog.py*, para ello use la información suministrada por el datasheet. La mejor forma de garantizar la programación es percatarse que el código este en capacidad de programar dicha memoria flash, dado el caso que no sea posible debe modificar el código conforme a las recomendaciones del fabricante, esto lo puede hacer a partir de la línea 144 del archivo *prog.py*, específicamente en el procedimiento *SetupChipCommands*.
+## La programación no exitosa es una oportunidad de colaborar
+Si la consola le informa *>>> Review wiki to add new flash chip !* o cualquier otro mensaje diferente a *Done* es una excelente oportunidad para colaborar en el proyecto. Lo primero que debe hacer es conseguir el firmware, si tiene algún firmware diferente a los aquí publicados por favor súbalo, la mejor manera de hacerlo es en una carpeta nombrada como la referencia de la tarjeta. Para continuar con el proceso debe identificar la memoria flash que implementa su driver, una buena pista es el Jedec ID informado por el programa, con la referencia clara, se debe proceder a actualizar el arreglo de objetos *FlashDevices*, ubicado entre las líneas 32 y 68 del archivo *prog.py*, para ello use la información suministrada por el datasheet. La mejor forma de garantizar la programación es percatarse que el código este en capacidad de programar dicha memoria flash, dado el caso que no sea posible debe modificar el código conforme a las recomendaciones del fabricante, esto lo puede hacer a partir de la línea 144 del archivo *prog.py*, específicamente en el procedimiento *SetupChipCommands*.
