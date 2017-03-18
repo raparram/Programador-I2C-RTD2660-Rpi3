@@ -27,10 +27,12 @@ Buscando en la capeta PCB800661 encontramos el firmware *PCB800661-LVDS1280X800-
 Para realizar la programación del firmware debe realizar la siguiente conexión según la tarjeta:
 
 * PCB800661:
-![Conexión PCB800661](http://thumbs.subefotos.com/d37b84e64cd67339c8d47c0f1d33d8cao.jpg)
+
+![Conexión PCB800661](http://fotos.subefotos.com/d37b84e64cd67339c8d47c0f1d33d8cao.jpg)
 
 * PCB800099:
-![Conexión PCB800099](http://thumbs.subefotos.com/5064c26c82d775459a9efa73a730a35do.jpg)
+
+![Conexión PCB800099](https://fotos.subefotos.com/5064c26c82d775459a9efa73a730a35do.png)
 
 Si su tarjeta no corresponde a las anteriores, busque un puerto de programación, por lo general es un conector Grove de 4 pines, como el observado en la tarjeta PCB800661, de los cuales dos pines son GND y los otros dos corresponden al I2C, SDA y SCL.
 
