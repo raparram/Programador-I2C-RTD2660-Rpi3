@@ -1,5 +1,3 @@
-
-
 # I2C PROGRAMMER FOR RTD2660 FROM RASPBERRY PI
 
 # Optimized for PCB800099 and PCB800661 cards. This software programs the flash memory connected to RTD2660.
@@ -166,7 +164,6 @@ def SPIComputeCRC(start, end):
 
     bus.write_i2c_block_data(0x4a,0x6f, [0x84])
     
-    # uint8_t b;
     b = bus.read_i2c_block_data(0x4a,0x6f,1)[0]
     while (not (b & 0x2)):
         b = bus.read_i2c_block_data(0x4a,0x6f,1)[0]
@@ -251,12 +248,10 @@ def ProgramFlash(fname,chip_size):
     print "Chip CRC {0:02X}\n".format(chip_crc);
     return data_crc == chip_crc;
 
-
-
 def GetFileSize(file):
     return os.stat.st_size(file)
-
     return 0;
+
 # void PrintManufacturer(uint32_t id) {
 def PrintManufacturer(id):
     if id == 0x20:
@@ -277,7 +272,6 @@ def FindChip(jedec_id):
         if (chip.jedec_id == jedec_id):
             print "flash matches!"
             return chip
-    
     print "What is this flash chip?"
     print ">>> Review wiki to add new flash chip !"
     exit(0)
@@ -286,15 +280,10 @@ def FindChip(jedec_id):
 def GetManufacturerId(jedec_id):
     return jedec_id >> 16
 
-
 print "Enter ISP?"
 bus.write_i2c_block_data(0x4a,0x6f, [0x80])
-    # uint32_t jedec_id = SPICommonCommand(E_CC_READ, 0x9f, 3, 0, 0);
 print "Send SPI command"
 jedec_id = SPICommonCommand(E_CC_READ, 0x9f, 3, 0, 0);
-print jedec_id
-#jedec_id=jedec_id[0]
-    # printf("JEDEC ID: 0x%02x\n", jedec_id);
 print "JEDEC ID: 0x{:02X}\n".format(jedec_id);
 chip = FindChip(jedec_id);
 
@@ -304,37 +293,26 @@ print "\n"
 print "Chip: {}\n".format(chip.device_name)
 print "Size: {}KB\n".format(chip.size_kb)
 
-
 #   // Setup flash command codes
 SetupChipCommands(jedec_id)
-
-
 b = SPICommonCommand(E_CC_READ, 0x5, 1, 0, 0)
 print "Flash status register: 0x{:02X}\n".format(b)
-
 ticks = time.time()
 filenam= sys.argv[1]
 
 #Program chip
 print "Flashing \"{0}\" to controller".format(os.path.abspath(filenam))
-ProgramFlash(filenam,256* 1024) # zapisj
-
+ProgramFlash(filenam,256* 1024)
 duration = time.time() - ticks
-
 remainder = duration % (60 * 60)
 hour_secs = duration - remainder
 hours = hour_secs/(60 * 60)
-
 duration -= hour_secs
-
 remainder = duration % (60)
 min_secs = duration - remainder
 mins = min_secs/(60)
-
 duration -= min_secs
-
 secs = duration
-
 print "run time: {0}:{1}:{2}".format(hours, mins, secs)
 
 exit()
