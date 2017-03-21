@@ -8,7 +8,7 @@ Este repositorio tiene como fin documentar y brindar las herramientas necesarias
         sudo apt-get install -y python-smbus i2c-tools
 
 ## Como seleccionar el firmware
-Si su tarjeta es PCB800099 o PCB800661 puede que el firmware que busca esta en alguna de las carpetas adjuntas, en el caso contrario, la sugerencia es solicitarlo a su proveedor. Desafortunadamente no he encontrado el código fuente para generar el *firmware.bin*, si usted logra obtenerlo y hacerlo funcionar, por favor hágaselo saber al mundo.
+Si su tarjeta es PCB800099 o PCB800661 probablemente el firmware que busca esta en alguna de las carpetas adjuntas, en el caso contrario, la sugerencia es solicitarlo a su proveedor. Desafortunadamente no he encontrado el código fuente para generar el *firmware.bin*, si usted logra obtenerlo y hacerlo funcionar, por favor hágaselo saber al mundo.
 
 Para elegir el firmware también hay que tener en cuenta la pantalla, específicamente 3 características: resolución, visualización de color y clase de señal de salida, la forma más efectiva para obtener esta información es por medio del datasheet de la misma.
 
@@ -39,11 +39,11 @@ Si su tarjeta no corresponde a las anteriores, busque un puerto de programación
 ## Programación
 Antes de la programación hay que garantizar la correcta conexión entre la tarjeta y la Raspberry Pi, para ello ejecute desde consola la siguiente línea:
 
-        sudo apt-get install -y python-smbus i2c-tools
+        sudo i2cdetect -y 1
         
-Lo que hace la Raspberry es escanear todas las direcciones posibles en búsqueda de depósitos conectados por I2C, la respuesta común es 4 o 3 dispositivos, varia según la tarjeta, si obtiene un resultado sin ninguna dirección activa debe revisar la conexión. Por consola debe ver lo siguiente:
+Lo que hace la Raspberry Pi 3 es escanear todas las direcciones posibles en búsqueda de dispositivos conectados por I2C, la respuesta común es 4 o 3 dispositivos, varia según la tarjeta, si obtiene un resultado sin ninguna dirección activa debe revisar la conexión. Por consola debe ver lo siguiente:
 
-![Scanner I2C Rpi3](http://subefotos.com/ver/?5064c26c82d775459a9efa73a730a35do.png)
+![Scanner I2C Rpi3](https://fotos.subefotos.com/6994d725f236ee50a16930f3206dc05co.png)
 
 Para ejecutar el programador debe abrir una terminal o consola desde la carpeta del repositorio e ingresar esta línea:
 
@@ -52,11 +52,11 @@ Para ejecutar el programador debe abrir una terminal o consola desde la carpeta 
 El proceso de carga del firmware puede demorar varios minutos, es normal, para tener una clara visión de una programación exitosa se invita a ver el archivo *test_consola*. 
 
 ### Ejemplo:
-Para obtener el repositorio y programar puede usar los siguientes comandos:
+Para obtener el repositorio y programar puede usar los siguientes comandos desde su Raspberry:
 
         git clone https://github.com/raparram/Programador-I2C-RTD2660-Rpi3.git
-        cd 
-        python prog.py /home/pi/
+        cd Programador-I2C-RTD2660-Rpi3
+        python prog.py /home/pi/Programador-I2C-RTD2660-Rpi3/PCB800661-LVDS1366X768-D6BIT.BIN
        
-## La programación no exitosa es una oportunidad de colaborar
-Si la consola le informa *>>> Review wiki to add new flash chip !* o cualquier otro mensaje diferente a *Done* es una excelente oportunidad para colaborar en el proyecto. Lo primero que debe hacer es conseguir el firmware, si tiene algún firmware diferente a los aquí publicados por favor súbalo, la mejor manera de hacerlo es en una carpeta nombrada como la referencia de la tarjeta. Para continuar con el proceso debe identificar la memoria flash que implementa su driver, una buena pista es el Jedec ID informado por el programa, con la referencia clara, se debe proceder a actualizar el arreglo de objetos *FlashDevices*, ubicado entre las líneas 32 y 68 del archivo *prog.py*, para ello use la información suministrada por el datasheet. La mejor forma de garantizar la programación es percatarse que el código este en capacidad de programar dicha memoria flash, dado el caso que no sea posible debe modificar el código conforme a las recomendaciones del fabricante, esto lo puede hacer a partir de la línea 144 del archivo *prog.py*, específicamente en el procedimiento *SetupChipCommands*.
+## Una programación no exitosa es una oportunidad de colaborar
+Si la consola le informa *>>> Review wiki to add new flash chip !* o cualquier otro mensaje diferente a *Done* es una excelente oportunidad para colaborar en el proyecto. Lo primero que debe hacer es conseguir el firmware, si tiene algún firmware diferente a los aquí publicados por favor súbalo, la mejor manera de hacerlo es en una carpeta nombrada como la referencia de la tarjeta. Para continuar con el proceso debe identificar la memoria flash que implementa su driver, una buena pista es el Jedec ID informado por este código, con la referencia clara, se debe proceder a actualizar el arreglo de objetos *FlashDevices*, ubicado entre las líneas 32 y 68 del archivo *prog.py*, para ello use la información suministrada por el datasheet. La mejor forma de garantizar la programación es percatarse que el código este en capacidad de cargar el firmware en dicha memoria flash, dado el caso que no sea capaz, debe modificar el código conforme a las recomendaciones del fabricante, esto lo puede hacer a partir de la línea 144 del archivo *prog.py*, específicamente en el procedimiento *SetupChipCommands*.
