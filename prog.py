@@ -13,8 +13,8 @@ import crc
 import sys
 import array
 
-print "Opening bus..."
-bus = SMBus(1) # Choose the I2C bus to which the card is connected. Rpi3: 1
+print ("Opening bus...")
+bus = SMBus(int(sys.argv[1])) # Choose the I2C bus to which the card is connected. Rpi3: 1
 
 E_CC_READ = 2
 E_CC_WRITE_AFTER_WREN = 3
@@ -90,7 +90,7 @@ def SPICommonCommand( cmd_type, cmd_code, read_length, write_length, write_value
     bus.write_i2c_block_data(0x4a,0x60, [reg_value | 1]) # Execute the command
     # uint8_t b;
     b = bus.read_i2c_block_data(0x4a,0x60,1)
-    print b
+    print (b)
     b=b[0]
     while (b & 1):
         b = bus.read_i2c_block_data(0x4a,0x60,1)
@@ -172,27 +172,27 @@ def ShouldProgramPage(buffer, size):
 
 def ProgramFlash(fname,chip_size):
     masiv=open(fname,"rb")
-    print "Erasing..."
+    print ("Erasing...")
     SPICommonCommand(E_CC_WRITE_AFTER_EWSR, 1, 0, 1, 0); #// Unprotect the Status Register
     SPICommonCommand(E_CC_WRITE_AFTER_WREN, 1, 0, 1, 0); #// Unprotect the flash
     SPICommonCommand(E_CC_ERASE, 0xc7, 0, 0, 0); #// Chip Erase
-    print "Done"
+    print ("Done")
     b=0
     addr = 0
     buffer = bytearray()
     #res = array.array('c')
     crc.InitCRC();
     #RTD266x can program only 256 bytes at a time.
-    print "chip size %x" % chip_size
+    print ("chip size %x" % chip_size)
     while addr<(chip_size):
         while b & 0x40:
             b = bus.read_i2c_block_data(0x4a,0x6f,1)[0]
 
-        print "Writing addr %x\r" % addr
+        print ("Writing addr %x\r" % addr)
         buffer=masiv.read(256)
         res=[]
         for i in buffer:
-            res.append(ord(i))
+            res.append(i)
         #print type(buffer)
         #res.fromfile(masiv, 256)
         #print buffer
@@ -213,7 +213,7 @@ def ProgramFlash(fname,chip_size):
        
         crc.ProcessCRC(list(res), len(buffer))
         addr += 256;
-    print "done"
+    print ("done")
     masiv.close();
 
     # Wait for programming cycle to finish
@@ -232,64 +232,63 @@ def ProgramFlash(fname,chip_size):
     # chip_crc = 0
     # 
 
-    print "Received data CRC {0:02X}\n".format(data_crc);
-    print "Chip CRC {0:02X}\n".format(chip_crc);
-    return data_crc == chip_crc;
+    print ("Received data CRC {0:02X}\n".format(data_crc))
+    print ("Chip CRC {0:02X}\n".format(chip_crc))
+    return data_crc == chip_crc
 
 def GetFileSize(file):
     return os.stat.st_size(file)
-    return 0;
+    return 0
 
 # void PrintManufacturer(uint32_t id) {
 def PrintManufacturer(id):
     if id == 0x20:
-        print "ST"
+        print ("ST")
     elif id == 0xef:
-        print "Winbond"
+        print ("Winbond")
     elif id == 0x1f:
-        print "Atmel"
+        print ("Atmel")
     elif id == 0xc2:
-        print "Macronix"
+        print ("Macronix")
     elif id == 0xbf:
-        print "Microchip"
+        print ("Microchip")
     else:
-        print "Unknown"
+        print ("Unknown")
 
 def FindChip(jedec_id):
     for chip in FlashDevices:
         if (chip.jedec_id == jedec_id):
-            print "flash matches!"
+            print ("flash matches!")
             return chip
-    print "What is this flash chip?"
-    print ">>> Review wiki to add new flash chip !"
+    print ("What is this flash chip?")
+    print (">>> Review wiki to add new flash chip !")
     exit(0)
     return None    
     
 def GetManufacturerId(jedec_id):
     return jedec_id >> 16
 
-print "Enter ISP?"
+print ("Enter ISP?")
 bus.write_i2c_block_data(0x4a,0x6f, [0x80])
-print "Send SPI command"
-jedec_id = SPICommonCommand(E_CC_READ, 0x9f, 3, 0, 0);
-print "JEDEC ID: 0x{:02X}\n".format(jedec_id);
-chip = FindChip(jedec_id);
+print ("Send SPI command")
+jedec_id = SPICommonCommand(E_CC_READ, 0x9f, 3, 0, 0)
+print ("JEDEC ID: 0x{:02X}\n".format(jedec_id))
+chip = FindChip(jedec_id)
 
-print "Manufacturer "
-PrintManufacturer(GetManufacturerId(chip.jedec_id));
-print "\n"
-print "Chip: {}\n".format(chip.device_name)
-print "Size: {}KB\n".format(chip.size_kb)
+print ("Manufacturer " , GetManufacturerId(chip.jedec_id))
+print ("\n")
+print ("Chip: {}\n".format(chip.device_name))
+print ("Size: {}KB\n".format(chip.size_kb))
 
 #   // Setup flash command codes
 SetupChipCommands(jedec_id)
 b = SPICommonCommand(E_CC_READ, 0x5, 1, 0, 0)
-print "Flash status register: 0x{:02X}\n".format(b)
+print ("Flash status register: 0x{:02X}\n".format(b))
 ticks = time.time()
-filenam= sys.argv[1]
+filenam= sys.argv[2]
 
 #Program chip
-print "Flashing \"{0}\" to controller".format(os.path.abspath(filenam))
+print ("Flashing \"{0}\" to controller".format(os.path.abspath(filenam)))
 ProgramFlash(filenam,256* 1024)
 duration = time.time() - ticks
 remainder = duration % (60 * 60)
@@ -301,6 +300,6 @@ min_secs = duration - remainder
 mins = min_secs/(60)
 duration -= min_secs
 secs = duration
-print "run time: {0}:{1}:{2}".format(hours, mins, secs)
+print ("run time: {0}:{1}:{2}".format(hours, mins, secs))
 
 exit()
