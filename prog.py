@@ -13,6 +13,10 @@ import crc
 import sys
 import array
 
+if(len(sys.argv)!=3):
+    print("Usage: prog.py BUS_NUMBER FIRMWARE_FILE")
+    exit(1)
+
 print ("Opening bus...")
 bus = SMBus(int(sys.argv[1])) # Choose the I2C bus to which the card is connected. Rpi3: 1
 
@@ -142,7 +146,7 @@ def SetupChipCommands(jedec_id):
         bus.write_i2c_block_data(0x4a,0x6d, [0x2])  # Flash program op code.
         bus.write_i2c_block_data(0x4a,0x6e, [0x5])  # Flash read status op code.
     else:
-        printf("Can not handle manufacturer code %02x\n", manufacturer_id)
+        print ("Can not handle manufacturer code %02x\n", manufacturer_id)
 
 def SPIComputeCRC(start, end):
     bus.write_i2c_block_data(0x4a,0x64, [start >> 16])
